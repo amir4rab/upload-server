@@ -100,18 +100,26 @@ app.post('/', async (req: Request, res:Response) => {
   }
   const fileNames : string[] = [];
   
+  let errInFileParsing : 
+    {
+      error: string,
+      status: number
+    } | null 
+    = null; 
 
-  Object.keys(req.files).forEach(fileKey => {
+  Object.keys(req.files).forEach( fileKey => {
+
     // extracting files from uploaded files
     // const firstFileKey = Object.keys(req.files)[0];
     const file = req.files![fileKey] as fileUpload.UploadedFile;
-  
+
     // extracting file format from file name
     const fileFormat = file.name.slice(file.name.lastIndexOf('.'));
   
     // verifying files format 
     if ( !acceptedFilesFormats.includes(fileFormat) ) {
-      return res.status(400).send({ successful: false, error: `${fileFormat} is not supported`, file: null });
+      console.log('False files');
+      return errInFileParsing = { error: `${fileFormat} is not supported`, status: 400 };
     }
 
     // generating random name for file
@@ -126,10 +134,16 @@ app.post('/', async (req: Request, res:Response) => {
     file.mv(resolvedPath, (err) => {
       if ( err ) {
         console.error(`error`, JSON.stringify(err));
-        return res.status(400).json({ successful: false, error: 'Something went wrong!', file: null });
+        return errInFileParsing = { error: `Something went wrong!`, status: 400 };
       }
     })
   })
+
+  // ending the handler in case of any error
+  if ( errInFileParsing !== null ) {
+    const { status, error } = errInFileParsing;
+    return res.status(status).json({ successful: false, error, file: null })
+  }
   
   res.status(200).json({ successful: true, error: null, file: fileNames });
 })
