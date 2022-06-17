@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  upload-container:
+    image: amir4rab/upload-server:0.0.2
+    # ports:
+    #   - '6060:6060'
+    volumes:
+      - ./static:/app/static
+    environment:
+      API_KEY: YOUR_API_KEY
+  nginx:
+    image: nginx
+    ports:
+      - '6061:80'
+    volumes:
+      - ./static:/usr/share/nginx/html
+    depends_on:
+      - upload-container
+  web:
+    build: .
+    container_name: web
+    ports:
+      - '3000:3000'
+    environment:
+      UPLOAD_API: http://upload-container:6060
+      API_KEY: YOUR_API_KEY
+      FILE_SERVER_URL: http://localhost:6061
+    depends_on:
+      - upload-container
+      - nginx
