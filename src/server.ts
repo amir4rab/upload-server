@@ -99,6 +99,11 @@ app.post('/', async (req: Request, res:Response) => {
     return res.status(400).send({ successful: false, error: 'No files has been sended!', file: null });
   }
   const fileNames : string[] = [];
+
+  let useOriginalName = false;
+  if ( req.query && req.query.name === 'true' ) {
+    useOriginalName = true
+  }
   
   let errInFileParsing : 
     {
@@ -123,9 +128,8 @@ app.post('/', async (req: Request, res:Response) => {
     }
 
     // generating random name for file
-    const fileUuid = uuid();
-    const fileNameOnServer = fileUuid + fileFormat;
-    fileNames.push(fileNameOnServer);
+    const fileNameOnServer = !useOriginalName ? uuid() + fileFormat : file.name;
+    fileNames.push( fileNameOnServer );
   
     // generating path for file storing
     const resolvedPath = path.resolve(staticFolderPath, imagesFolder, fileNameOnServer);
