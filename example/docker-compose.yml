@@ -1,9 +1,7 @@
 version: "3.9"
 services:
   upload-container:
-    image: amir4rab/upload-server:0.0.2
-    # ports:
-    #   - '6060:6060'
+    image: amir4rab/upload-server:latest
     volumes:
       - ./static:/app/static
     environment:
