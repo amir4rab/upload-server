@@ -55,7 +55,7 @@ app.delete('/', async (req: Request, res: Response) => {
   }
   
   // verifying file name
-  const regex = new RegExp(/^([a-z0-9-]+).([a-z0-9]+)$/);
+  const regex = new RegExp(/^([a-z0-9-]+)\.([a-z0-9]+)$/);
   if ( !regex.test(file) ) {
     return res.status(400).send({ successful: false, error: 'File name is invalid!' });
   }
